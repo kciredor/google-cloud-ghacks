@@ -13,5 +13,42 @@
 # limitations under the License.
 resource "google_project_service" "compute_api" {
   service            = "compute.googleapis.com"
-  disable_on_destroy = false  
+  disable_on_destroy = false
+}
+
+resource "google_compute_instance" "default" {
+  project      = var.gcp_project_id
+  zone         = "us-central1-a"
+  name         = "gce-instance-l4"
+  machine_type = "g2-standard-2"
+  tags         = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+
+  guest_accelerator {
+    type  = "nvidia-l4"
+    count = 1
+  }
+
+  network_interface {
+    network = "default"
+  }
+
+  scheduling {
+    on_host_maintenance = "TERMINATE"
+    automatic_restart   = true
+  }
+
+  service_account {
+    scopes = ["cloud-platform"]
+  }
+
+  allow_stopping_for_update = true
+  depends_on = [
+    google_project_service.compute_api
+  ]
 }
