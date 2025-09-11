@@ -2,121 +2,88 @@
 
 ## Introduction
 
-the AI Infrastructure on Google gHack will ... TODO.
+Running AI workloads requires specific infrastructure. We will go hands-on with accelerators like GPUs. Further, let's bridge the gap between hardware and software with platforms like Vertex AI.
 
 ## Learning Objectives
 
-In this hack you will be solving ... TODO
-
-1. TODO
-1. TODO
+1. Getting familiar with compute related to AI: welcome to GPUs
+1. How to obtain capacity? Try Dynamic Workload Scheduler
+1. The link between AI Infra and Software: this is Vertex AI
 
 ## Challenges
 
-- Challenge 1: TODO
-  - Create an environment ... TODO
+- Challenge 1: Hello, CPU!
+  - Creating a Virtual Machine with Intel AMX extensions
+  - Code an example script or bash command to confirm the enabled exentions
+- Challenge 2: Hello, GPU!
+  - Creating a Virtual Machine with a NVIDIA L4 GPU attached
+  - Verify the driver
+  - Code an example script to detect the attached GPU
+- Challenge 3: Benchmarking CPU vs GPU
+  - Training on CPU
+  - Training on GPU
+  - Inference on CPU
+  - Inference on GPU
+- Challenge 4: Dynamic Workload Scheduler
+  - Obtaining an A100 GPU
+  - TODO
+- Challenge 5: Vertex AI
+  - TODO
 
 ## Prerequisites
 
-- Your own GCP project with Owner IAM role.
-- gcloud CLI
+Requirements are part of the Coaches Guide. You'll need a GCP project with the IAM Owner role.
 
 ## Contributors
 
-- Roderick Schaefer
+- Roderick Schaefer (kciredor@google.com)
 
-## Challenge 1: Provision an IoT environment
+---
 
-***This is a template for a single challenge. The italicized text provides hints & examples of what should or should NOT go in each section. You should remove all italicized & sample text and replace with your content.***
+## Challenge 1: Hello, CPU!
 
-> **Note**
-> *Use this format for sample informational blockquote, the Note part is case sensitive*
+### Pre-requisites
 
-> **Warning**
-> *Use this format for sample warning blockquote, the Warning part is case sensitive*
+* Access to your assigned GCP project.
+* Basic knowledge of the Linux command line.
 
-### Pre-requisites (Optional)
+### Introduction
 
-*Include any technical pre-requisites needed for this challenge specifically.  Typically, it is completion of one or more of the previous challenges if there is a dependency. This section is optional and may be omitted.*
+When we think of AI and Machine Learning, we usually think of GPUs. However, modern CPUs are not standing still. They now include specialized instruction sets to accelerate matrix calculations—the heart of many AI operations.
 
-### Introduction (Optional)
+One of the most important new instruction sets is **Intel Advanced Matrix Extensions (AMX)**. AMX allows the CPU to perform matrix multiplication operations much faster, making it a powerful tool for AI **inference** and even small-scale training.
 
-*This section should provide an overview of the technologies or tasks that will be needed to complete the this challenge.  This includes the technical context for the challenge, as well as any new "lessons" the attendees should learn before completing the challenge.*
-
-- *Optionally, the coach or event host is encouraged to present a mini-lesson (with the provided lectures presentation or maybe a video) to set up the context and introduction to each challenge. A summary of the content of that mini-lesson is a good candidate for this Introduction section*
-
-*For example:*
-
-When setting up an IoT device, it is important to understand how 'thingamajigs' work. Thingamajigs are a key part of every IoT device and ensure they are able to communicate properly with edge servers. Thingamajigs require IP addresses to be assigned to them by a server and thus must have unique MAC addresses. In this challenge, you will get hands on with a thingamajig and learn how one is configured.
+In this challenge, your goal is to provision a VM on Google Cloud that has these special AMX capabilities and prove that they are active.
 
 ### Description
 
-*This section should clearly state the goals of the challenge and any high-level instructions you want the students to follow. You may provide a list of specifications required to meet the goals. If this is more than 2-3 paragraphs, it is likely you are not doing it right.*
+Your task is to launch a Google Compute Engine virtual machine that is equipped with Intel AMX extensions. Not all machine types on GCP have this feature; you will need to find one that does.
 
-> **Note** *Do NOT use ordered lists as that is an indicator of 'step-by-step' instructions. Instead, use bullet lists to list out goals and/or specifications.*
+> **Note**
+> You will need to research which GCP machine types run on the required CPU platforms. The key is to find a VM that uses a **3rd Generation (Ice Lake)** or **4th Generation (Sapphire Rapids)** Intel Xeon processor.
 
-> **Note** *You may use Markdown sub-headers to organize key sections of your challenge description.*
+Once your VM is running, you must SSH into it and run a command to inspect the CPU's features and confirm that AMX is enabled.
 
-*Optionally, you may provide resource files such as a sample application, code snippets, or templates as learning aids for the students. These files are stored in the hack's `resources` sub-folder. It is the coach's responsibility to package these resources and provide them to students in the Google Space's Files section as per [the instructions provided](https://ghacks.dev/faq/howto-host-hack.html#making-resources-available).*
-
-> **Note** *Do NOT provide direct links to files or folders in the gHacks Github repository from the student guide. Instead, you should refer to the "resources in the Google Space Files section".*
-
-*Here is some sample challenge text for the IoT Hack Of The Century:*
-
-In this challenge, you will properly configure the thingamajig for your IoT device so that it can communicate with the mother ship.
-
-You can find a sample `thingamajig.config` file in the Files section of this hack's Google Space provided by your coach. This is a good starting reference, but you will need to discover how to set exact settings.
-
-Please configure the thingamajig with the following specifications:
-
-- Use dynamic IP addresses
-- Only trust the following whitelisted servers: "mothership", "IoTQueenBee"
-- Deny access to "IoTProxyShip"
+Your specifications are:
+* Launch a new Compute Engine VM instance.
+* The instance must use a machine type that provides Intel AMX extensions.
+* The instance should use a modern Linux OS, for example, the **Ubuntu 24.04 LTS** image.
+* Once running, you must find a way to confirm from the command line that the CPU flags `amx_tile`, `amx_int8`, and `amx_bf16` are present.
 
 ### Success Criteria
 
-- *Success criteria go here. The success criteria should be a list of checks so a student knows they have completed the challenge successfully. These should be things that can be demonstrated to a coach.*
-- *The success criteria should not be a list of instructions.*
-- *Success criteria should always start with language like: "Validate XXX..." or "Verify YYY..." or "Show ZZZ..." or "Demonstrate VVV..."*
-
-*Sample success criteria for the IoT sample challenge:*
-
-- Verify that the IoT device boots properly after its thingamajig is configured.
-- Verify that the thingamajig can connect to the mothership.
-- Demonstrate that the thingamajig will not connect to the IoTProxyShip
+* Demonstrate to your coach that your VM instance is running in the GCP Console.
+* Show the output of a Linux command that lists your VM's CPU features.
+* Verify that the output clearly shows the `amx_tile`, `amx_int8`, and `amx_bf16` flags.
 
 ### Tips
 
-*This section is optional and may be omitted.*
-
-*Add tips and hints here to give students food for thought. Sample IoT tips:*
-
-- IoTDevices can fail from a broken heart if they are not together with their thingamajig. Your device will display a broken heart emoji on its screen if this happens.
-- An IoTDevice can have one or more thingamajigs attached which allow them to connect to multiple networks.
+* The `lscpu` command in Linux is very useful for inspecting CPU features and flags.
+* You can use the `gcloud` command-line tool or the GCP Console to create your VM.
+* The GCP documentation for [Machine Types](https://cloud.google.com/compute/docs/machine-types) is your best friend. Look for pages that describe the CPU platforms for different machine series (like C3, N4, N2, etc.).
 
 ### Learning Resources
 
-*This is a list of relevant links and online articles that should give the attendees the knowledge needed to complete the challenge.*
-
-*Think of this list as giving the students a head start on some easy Internet searches. However, try not to include documentation links that are the literal step-by-step answer of the challenge's scenario.*
-
-> **Note** *Use descriptive text for each link instead of just URLs.*
-
-*Sample IoT resource links:*
-
-- [What is a Thingamajig?](https://www.google.com/search?q=what+is+a+thingamajig)
-- [10 Tips for Never Forgetting Your Thingamajig](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-- [IoT & Thingamajigs: Together Forever](https://www.youtube.com/watch?v=yPYZpwSpKmA)
-
-### Advanced Challenges (Optional)
-
-*If you want, you may provide additional goals to this challenge for folks who are eager.*
-
-*This section is optional and may be omitted.*
-
-*Sample IoT advanced challenges:*
-
-Too comfortable?  Eager to do more?  Try these additional challenges!
-
-- Observe what happens if your IoTDevice is separated from its thingamajig.
-- Configure your IoTDevice to connect to BOTH the mothership and IoTQueenBee at the same time.
+* [Google Cloud Machine Types documentation](https://cloud.google.com/compute/docs/machine-types)
+* [An overview of Intel AMX](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html)
+* [How to use the `lscpu` command](https://man7.org/linux/man-pages/man1/lscpu.1.html)

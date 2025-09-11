@@ -2,16 +2,16 @@
 
 ## Introduction
 
-Welcome to the coach's guide for the AI Infrastructure on Google gHack. Here you will find links to specific guidance for coaches for each of the challenges.
-
-Remember that this hack includes a optional [lecture presentation](resources/lecture.pdf) that features short presentations to introduce key topics associated with each challenge. It is recommended that the host present each short presentation before attendees kick off that challenge.
+Welcome to the coaches guide for the AI Infrastructure on Google gHack.
 
 > **Note** If you are a gHacks participant, this is the answer guide. Don't cheat yourself by looking at this guide during the hack!
 
-## Coach's Guides
+## Coaches Guides
 
-- Challenge 1: TODO
-  - Create an environment.
+TODO
+
+- Challenge 1: xxxxxxxxxxxxxxx
+  - xxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Coach Prerequisites
 
@@ -21,7 +21,7 @@ The guide covers the common preparation steps a coach needs to do before any gHa
 
 ### Student Resources
 
-Before the hack, it is the Coach's responsibility create and make available needed resources including:
+Before the hack, it is the coaches responsibility create and make available needed resources including:
 
 - Files for students
 - Lecture presentation
@@ -31,50 +31,26 @@ Follow [these instructions](https://ghacks.dev/faq/howto-host-hack.html#making-r
 
 Always refer students to the [gHacks website](https://ghacks.dev) for the student guide: [https://ghacks.dev](https://ghacks.dev)
 
-> **Note** Students should **NOT** be given a link to the gHacks Github repo before or during a hack. The student guide intentionally does **NOT** have any links to the Coach's guide or the GitHub repo.
+> **Note** Students should **NOT** be given a link to the gHacks Github repo before or during a hack. The student guide intentionally does **NOT** have any links to the coaches guide or the GitHub repo.
 
-### Additional Coach Prerequisites (Optional)
+### Additional Coach Prerequisites
 
-_Please list any additional pre-event setup steps a coach would be required to set up such as, creating or hosting a shared dataset, or preparing external resources._
+Mandatory: ensure you go through LFS capacity planning, because this gHack uses GPUs.
 
 ## Google Cloud Requirements
 
 This hack requires students to have access to Google Cloud project where they can create and consume Google Cloud resources. These requirements should be shared with a stakeholder in the organization that will be providing the Google Cloud project that will be used by the students.
 
-_Please list Google Cloud project requirements._
-
-_For example:_
-
-- Google Cloud resources that will be consumed by a student implementing the hack's challenges
-- Google Cloud permissions required by a student to complete the hack's challenges.
-
-## Suggested Hack Agenda (Optional)
-
-_This section is optional. You may wish to provide an estimate of how long each challenge should take for an average squad of students to complete and/or a proposal of how many challenges a coach should structure each session for a multi-session hack event. For example:_
-
-- Sample Day 1
-  - Challenge 1 (1 hour)
-  - Challenge 2 (30 mins)
-  - Challenge 3 (2 hours)
-- Sample Day 2
-  - Challenge 4 (45 mins)
-  - Challenge 5 (1 hour)
-  - Challenge 6 (45 mins)
+Students will need access to a working and unrestricted GCP environment. With gHacks this is typically provided by Qwiklabs, powered by LFS. They'll need to bring their own laptops with un-firewalled access to *.qwiklabs.com and *.google.com.
 
 ## Repository Contents
 
-_The default files & folders are listed below. You may add to this if you want to specify what is in additional sub-folders you may add._
-
 - `README.md`
-  - Student's Challenge Guide
+  - Students Challenge Guide
 - `solutions.md`
-  - Coach's Guide and related files
-- `./resources`
-  - Resource files, sample code, scripts, etc meant to be provided to students. (Must be packaged up by the coach and provided to students at start of event)
+  - Coaches Guide
 - `./artifacts`
   - Terraform scripts and other files needed to set up the environment for the gHack
-- `./images`
-  - Images and screenshots used in the Student or Coach's Guide
 
 ## Environment
 
@@ -86,17 +62,44 @@ _The default files & folders are listed below. You may add to this if you want t
 
 ### Notes & Guidance
 
-This is the only section you need to include.
+The solution has two parts:
+1.  **Choosing the right machine type:** Students need to discover that Intel AMX is available on certain VM families like C3 and C4.
+2.  **Verifying the feature:** The `lscpu` command on Linux lists all CPU flags. Students just need to `grep` this output for `amx`.
 
-Use general non-bulleted text for the beginning of a solution area for this challenge
+### Solution Steps
 
-- Then move into bullets
-  - And sub-bullets and even
-    - sub-sub-bullets
+Here is the fastest `gcloud` path to solving the challenge.
 
-Break things apart with more than one bullet list
+**Step 1: Create the VM**
 
-- Like this
-- One
-- Right
-- Here
+The command below creates a **C3 (Sapphire Rapids)** machine, which is guaranteed to have AMX.
+
+> **Note**
+> C3 machines are not available in all zones. `us-central1-a` is a reliable choice. If students get a zone error, they can find a valid one by running `gcloud compute machine-types list --filter="name=c3-standard-4"`.
+
+```
+# We use c3-standard-4 here.
+gcloud compute instances create amx-instance \
+  --project=STUDENT_PROJECT_ID \
+  --zone=us-central1-a \
+  --machine-type=c3-standard-4 \
+  --image-family=ubuntu-2404-lts \
+  --image-project=ubuntu-os-cloud
+```
+
+**Step 2: SSH into the VM**
+
+`gcloud compute ssh amx-instance --zone=us-central1-a`
+
+** Step 3: Verify the AMX Extensions **
+
+# Run lscpu and filter for 'amx'
+`lscpu | grep amx`
+
+The student should see an output similar to this, which confirms the success criteria:
+`Flags:               ... amx_bf16 amx_tile amx_int8 ...`
+
+### Common Pitfalls
+Student chose another VM family like e2-standard-2 or n1-standard-2. These machines use older CPUs. If they run lscpu | grep amx, they will get no output. Guide them to the Machine Types documentation to find a machine series that supports 3rd or 4th Gen Intel CPUs.
+
+"Resource not found" or Zone error: The student picked a machine type (like C3) that isn't available in their chosen or default zone. Have them explicitly specify a zone like us-central1-a or europe-west4-a.

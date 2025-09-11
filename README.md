@@ -38,7 +38,7 @@ Teams are not left on their own to solve the challenges. Coaches work with each 
 - [Infrastructure as Code with Terraform](./hacks/iac-with-tf/README.md)
   > This gHack is intended as an introduction to provisioning GCP resources using Terraform. We'll start with the basics of Infrastructure as Code (IaC) and help you automate the process of infrastructure provisioning.
 - [AI Infrastructure on Google](./hacks/ai-infra/README.md)
-  > TODO
+  > Running AI workloads requires specific infrastructure. We will go hands-on with accelerators like GPUs. Further, let's bridge the gap between hardware and software with platforms like Vertex AI.
 
 ### Application Development
 

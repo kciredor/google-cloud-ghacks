@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,4 +28,22 @@ variable "gcp_zone" {
   type        = string
   description = "Zone to create resources in."
   default     = "us-central1-c"
+}
+
+# GCP services to be enabled.
+variable "gcp_service_list" {
+  type = list(string)
+  default = [
+    "compute.googleapis.com",
+    # "tpu.googleapis.com",
+  ]
+}
+
+# Regions to be used including VPC subnet creation.
+variable "regions" {
+  type = map(string)
+  default = {
+    "us-central1" = "10.0.0.0/24",
+    "us-east1"    = "10.0.1.0/24",
+  }
 }

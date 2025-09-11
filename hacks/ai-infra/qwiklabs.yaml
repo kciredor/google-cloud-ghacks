@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,24 @@
 schema_version: 2
 default_locale: en
 title: "[gHacks] AI Infrastructure with Google"
-description: ""
+description: "Running AI workloads requires specific infrastructure. We will go hands-on with accelerators like GPUs. Further, let's bridge the gap between hardware and software with platforms like Vertex AI."
 instruction:
   type: md
-  uri: instructions/en.md
-duration: 420
-max_duration: 420
+  uri: README.md
+duration: 300
+max_duration: 480
 credits: 0
-level: fundamental
-tags:
-product_tags:
-role_tags:
+level: intermediate
+tags: [infrastructure, machine-learning]
+product_tags: [cloud-ai, cloud-run, cloud-tpu, compute-engine, kubernetes-engine]
+role_tags: [cloud-architect, data-engineer, application-developer]
 domain_tags:
 environment:
   resources:
     - type: gcp_project
       id: project
+      # Important: this unlocks GPU capacity, currently 8x L4.
+      variant: gcp_medium_extra
       startup_script:
         type: qwiklabs
         path: artifacts
@@ -87,6 +89,5 @@ environment:
       reference: user_5.username
     - label: Password 5
       reference: user_5.password
-
     - label: Project ID
       reference: project.project_id
